@@ -1,13 +1,15 @@
 use anyhow::Result;
+use indexmap::IndexMap;
 use serde::Deserialize;
-use std::{collections::HashMap, path::PathBuf};
+use std::path::PathBuf;
 
 #[derive(Deserialize, Default, Debug)]
-#[serde(default)]
+#[serde(deny_unknown_fields)]
 pub struct Config {
     pub options: Options,
+    #[serde(default)]
     pub taskmanager: TaskManager,
-    pub tasks: HashMap<String, Tasks>,
+    pub tasks: IndexMap<String, Tasks>,
 }
 
 #[derive(Deserialize, Default, Debug)]
@@ -17,7 +19,7 @@ pub struct TaskManager {
 }
 
 #[derive(Deserialize, Debug)]
-#[serde(tag = "type")]
+#[serde(tag = "type", deny_unknown_fields)]
 pub enum Tasks {
     #[serde(rename = "install")]
     Install {
@@ -53,7 +55,7 @@ pub enum Tasks {
 }
 
 #[derive(Deserialize, Default, Debug)]
-#[serde(default)]
+#[serde(deny_unknown_fields)]
 pub struct Options {
     pub packagemanager: String,
 }

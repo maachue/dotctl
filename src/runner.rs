@@ -1,87 +1,44 @@
-use std::{collections::HashMap, process::Command};
+use std::process::Command;
 
 use anyhow::{Result, bail};
+use indexmap::IndexMap;
 
 use crate::config::Tasks;
 
 pub fn runner(
     taskmanager: &Option<Vec<String>>,
-    tasks: &HashMap<String, Tasks>,
+    tasks: &IndexMap<String, Tasks>,
     pm: &str,
 ) -> Result<()> {
-    if let Some(task_list) = taskmanager {
-        for task_name in task_list {
-            if let Some(task) = tasks.get(task_name) {
-                match task {
-                    Tasks::Install { flags, pkgs } => {
-                        if flags.is_empty() && !pkgs.is_empty() {
-                            bail!("No flags??")
-                        }
-                        if !pkgs.is_empty() {
-                            packagemanager(pm, flags, pkgs)?;
-                        }
-                    }
-                    Tasks::Remove { flags, pkgs } => {
-                        if flags.is_empty() && !pkgs.is_empty() {
-                            bail!("No flags??")
-                        }
-                        if !pkgs.is_empty() {
-                            packagemanager(pm, flags, pkgs)?;
-                        }
-                    }
-                    Tasks::Update { flags } => {
-                        if flags.is_empty() {
-                            bail!("No flags??")
-                        } else {
-                            packagemanager(pm, flags, &[])?;
-                        }
-                    }
-                    Tasks::Shell {
-                        program,
-                        flags,
-                        args,
-                    } => {
-                        shellrun(program, flags, args)?;
-                    }
-                }
-            } else {
-                eprintln!("Task not found: {}", task_name);
-            }
+    let task_iter: Vec<&Tasks> = match taskmanager {
+        Some(order) => order.iter().filter_map(|name| tasks.get(name)).collect(),
+        None => tasks.values().collect(),
+    };
+
+    for task in task_iter {
+        run_task(task, pm)?;
+    }
+
+    Ok(())
+}
+
+fn run_task(task: &Tasks, pm: &str) -> Result<()> {
+    match task {
+        Tasks::Install { flags, pkgs } => {
+            packagemanager(pm, flags, pkgs)?;
         }
-    } else {
-        for task in tasks.values() {
-            match task {
-                Tasks::Install { flags, pkgs } => {
-                    if flags.is_empty() && !pkgs.is_empty() {
-                        bail!("No flags??")
-                    }
-                    if !pkgs.is_empty() {
-                        packagemanager(pm, flags, pkgs)?;
-                    }
-                }
-                Tasks::Remove { flags, pkgs } => {
-                    if flags.is_empty() && !pkgs.is_empty() {
-                        bail!("No flags??")
-                    }
-                    if !pkgs.is_empty() {
-                        packagemanager(pm, flags, pkgs)?;
-                    }
-                }
-                Tasks::Update { flags } => {
-                    if flags.is_empty() {
-                        bail!("No flags??")
-                    } else {
-                        packagemanager(pm, flags, &[])?;
-                    }
-                }
-                Tasks::Shell {
-                    program,
-                    flags,
-                    args,
-                } => {
-                    shellrun(program, flags, args)?;
-                }
-            }
+        Tasks::Remove { flags, pkgs } => {
+            packagemanager(pm, flags, pkgs)?;
+        }
+        Tasks::Update { flags } => {
+            packagemanager(pm, flags, &[])?;
+        }
+        Tasks::Shell {
+            program,
+            flags,
+            args,
+        } => {
+            shellrun(program, flags, args)?;
         }
     }
 
