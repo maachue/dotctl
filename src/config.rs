@@ -27,6 +27,7 @@ pub enum Tasks {
         flags: Vec<String>,
         #[serde(default)]
         pkgs: Vec<String>,
+        // is_sudo: bool,
     },
 
     #[serde(rename = "remove")]
@@ -35,12 +36,14 @@ pub enum Tasks {
         flags: Vec<String>,
         #[serde(default)]
         pkgs: Vec<String>,
+        // is_sudo: bool,
     },
 
     #[serde(rename = "update")]
     Update {
         #[serde(default)]
         flags: Vec<String>,
+        // is_sudo: bool,
     },
 
     #[serde(rename = "shell")]
@@ -51,6 +54,7 @@ pub enum Tasks {
         flags: Vec<String>,
         #[serde(default)]
         args: Vec<String>,
+        // is_sudo: Option<bool>,
     },
 }
 

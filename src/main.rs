@@ -10,14 +10,15 @@ mod runner;
 fn main() -> Result<()> {
     let args = cli::Cli::parse();
     match args.command {
-        Commands::Install { config } => {
+        Commands::Install { config, dry_run } => {
             let cfg = config::Config::parse(config)?;
             println!("{:?}", cfg);
 
-            runner::runner(
+            runner::manage(
                 &cfg.taskmanager.run,
                 &cfg.tasks,
                 &cfg.options.packagemanager,
+                dry_run,
             )?;
         }
         Commands::Set { settings } => {

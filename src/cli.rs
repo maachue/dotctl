@@ -10,6 +10,12 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
-    Install { config: PathBuf },
-    Set { settings: String },
+    Install {
+        config: PathBuf,
+        #[arg(long)]
+        dry_run: bool,
+    },
+    Set {
+        settings: String,
+    },
 }

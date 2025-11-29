@@ -1,14 +1,21 @@
-use std::process::Command;
-
-use anyhow::{Result, bail};
+use anyhow::Result;
 use indexmap::IndexMap;
+use std::process::Command;
+use which::which;
 
 use crate::config::Tasks;
 
-pub fn runner(
+pub struct BuildCommand {
+    program: String,
+    args: Vec<String>,
+    is_sudo: bool,
+}
+
+pub fn manage(
     taskmanager: &Option<Vec<String>>,
     tasks: &IndexMap<String, Tasks>,
     pm: &str,
+    dry_run: bool,
 ) -> Result<()> {
     let task_iter: Vec<&Tasks> = match taskmanager {
         Some(order) => order.iter().filter_map(|name| tasks.get(name)).collect(),
@@ -16,57 +23,83 @@ pub fn runner(
     };
 
     for task in task_iter {
-        run_task(task, pm)?;
+        let cmd = match task {
+            Tasks::Install { flags, pkgs } | Tasks::Remove { flags, pkgs } => BuildCommand::new(
+                pm,
+                flags
+                    .iter()
+                    .cloned()
+                    .chain(pkgs.iter().cloned())
+                    .collect::<Vec<String>>(),
+                true,
+            )?,
+            Tasks::Update { flags } => BuildCommand::new(pm, flags.to_vec(), true)?,
+            Tasks::Shell {
+                program,
+                flags,
+                args,
+            } => BuildCommand::new(
+                program,
+                flags
+                    .iter()
+                    .cloned()
+                    .chain(args.iter().cloned())
+                    .collect::<Vec<String>>(),
+                false,
+            )?,
+        };
+        if !dry_run {
+            BuildCommand::run(&cmd)?;
+        } else {
+            println!("{}", BuildCommand::display_cmd(&cmd));
+        }
     }
+
+    println!("idk what to do right now");
 
     Ok(())
 }
 
-fn run_task(task: &Tasks, pm: &str) -> Result<()> {
-    match task {
-        Tasks::Install { flags, pkgs } => {
-            packagemanager(pm, flags, pkgs)?;
-        }
-        Tasks::Remove { flags, pkgs } => {
-            packagemanager(pm, flags, pkgs)?;
-        }
-        Tasks::Update { flags } => {
-            packagemanager(pm, flags, &[])?;
-        }
-        Tasks::Shell {
-            program,
-            flags,
+fn validate(program: &str) -> Result<()> {
+    which(program)?;
+    Ok(())
+}
+
+impl BuildCommand {
+    pub fn new(program: &str, args: Vec<String>, is_sudo: bool) -> Result<Self> {
+        validate(program)?;
+        Ok(Self {
+            program: program.to_string(),
             args,
-        } => {
-            shellrun(program, flags, args)?;
+            is_sudo,
+        })
+    }
+
+    pub fn display_cmd(&self) -> String {
+        if self.is_sudo {
+            format!("sudo {} {}", self.program, self.args.join(" "))
+        } else {
+            format!("{} {}", self.program, self.args.join(" "))
         }
     }
 
-    Ok(())
-}
+    pub fn run(&self) -> Result<()> {
+        let mut cmd = if self.is_sudo {
+            let mut c = Command::new("sudo");
+            c.arg(&self.program).args(&self.args);
+            c
+        } else {
+            let mut c = Command::new(&self.program);
+            c.args(&self.args);
+            c
+        };
 
-fn packagemanager(mg: &str, flags: &[String], pkgs: &[String]) -> Result<()> {
-    let mut cmd = Command::new("sudo");
-    cmd.arg(mg);
-    cmd.args(flags);
-    cmd.args(pkgs);
+        let status = cmd.status()?;
 
-    // let status = cmd.status()?;
-    // eprintln!("Exit status: {}", status);
-    eprintln!("{:?}", cmd);
+        if !status.success() {
+            anyhow::bail!("Command failed with status: {}", status);
+        }
 
-    Ok(())
-}
-
-fn shellrun(program: &str, flags: &[String], args: &[String]) -> Result<()> {
-    let mut cmd = Command::new(program);
-    cmd.args(flags);
-    cmd.args(args);
-
-    // let status = cmd.status()?;
-    // eprintln!("Exit status: {}", status);
-
-    eprintln!("{:?}", cmd);
-
-    Ok(())
+        Ok(())
+    }
 }
