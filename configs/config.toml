@@ -4,6 +4,7 @@
 
 # GLOBAL OPTIONS
 [options]
+non_confirm = true # THIS WILL BE FALSE ON DEFAULT
 packagemanager = "pacman" # THIS IS REQUIRED
 
 # THE TASK MANAGER
@@ -45,12 +46,14 @@ run = ["update_system", "installer", "remover", "aur", "flatpak"]
 type = "install"
 flags = ["-S", "--needed"]
 pkgs = ["neovim"]
+is_sudo = true
 
 # type = remove
 [tasks.remover]
 type = "remove"
 flags = ["-R"]
 pkgs = ["mako"]
+is_sudo = true
 
 # ## Testing error handling, dont take care of it
 # [tasks.make_it_error]
@@ -60,6 +63,7 @@ pkgs = ["mako"]
 [tasks.update_system]
 type = "update"
 flags = ["-Syu"]
+is_sudo = true
 
 # type = shell
 [tasks.aur]
@@ -67,7 +71,7 @@ type = "shell"
 program = "paru"
 flags = ["-S"]
 args = ["calibre-bin"]
-# paru -S calibre-bin
+# Command will be excuate: paru -S calibre-bin
 
 # type = shell
 [tasks.flatpak]
@@ -75,4 +79,4 @@ type = "shell"
 program = "flatpak"
 flags = ["install"]
 args = ["md.obsidian.obsidian", "com.spotify.Client"]
-# flatpak install md.obsidian.obsidian com.spotify.Client
+# Command will be excuate: flatpak install md.obsidian.obsidian com.spotify.Client

@@ -5,8 +5,16 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.100"
+cin = "0.2.0"
 clap = { version = "4.5.53", features = ["derive"] }
+color-eyre = "0.6.5"
 indexmap = { version = "2.12.1", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
 toml = { version = "0.9.8", features = ["preserve_order"] }
 which = "8.0.0"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic ="abort"

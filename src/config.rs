@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 use indexmap::IndexMap;
 use serde::Deserialize;
 use std::path::PathBuf;
@@ -18,33 +18,25 @@ pub struct TaskManager {
     pub run: Option<Vec<String>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 #[serde(tag = "type", deny_unknown_fields)]
 pub enum Tasks {
     #[serde(rename = "install")]
     Install {
-        #[serde(default)]
         flags: Vec<String>,
-        #[serde(default)]
         pkgs: Vec<String>,
-        // is_sudo: bool,
+        is_sudo: bool,
     },
 
     #[serde(rename = "remove")]
     Remove {
-        #[serde(default)]
         flags: Vec<String>,
-        #[serde(default)]
         pkgs: Vec<String>,
-        // is_sudo: bool,
+        is_sudo: bool,
     },
 
     #[serde(rename = "update")]
-    Update {
-        #[serde(default)]
-        flags: Vec<String>,
-        // is_sudo: bool,
-    },
+    Update { flags: Vec<String>, is_sudo: bool },
 
     #[serde(rename = "shell")]
     Shell {
@@ -54,13 +46,15 @@ pub enum Tasks {
         flags: Vec<String>,
         #[serde(default)]
         args: Vec<String>,
-        // is_sudo: Option<bool>,
+        #[serde(default)]
+        is_sudo: bool,
     },
 }
 
 #[derive(Deserialize, Default, Debug)]
 #[serde(deny_unknown_fields)]
 pub struct Options {
+    pub non_confirm: bool,
     pub packagemanager: String,
 }
 

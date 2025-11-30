@@ -10,10 +10,26 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
+    /// installing dependencies based on toml config
     Install {
+        /// path to your config
         config: PathBuf,
-        #[arg(long)]
+
+        /// print all command(s) will execute
+        #[arg(long, alias = "validate")]
         dry_run: bool,
+
+        /// non validate run (all will validate by default)
+        #[arg(long)]
+        non_validate: bool,
+
+        /// debug (print all the config has)
+        #[arg(long, default_value_t = false)]
+        debug: bool,
+
+        /// skip confirm
+        #[arg(long)]
+        non_confirm: bool,
     },
     Set {
         settings: String,

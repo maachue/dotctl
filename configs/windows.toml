@@ -1,0 +1,39 @@
+# Config for testing on windows
+# I tried when see `cannot find binary path` when use windows to coding
+
+[taskmanager]
+run = ["magick", "fastfetch", "install-error"]
+
+[options]
+non_confirm = false
+packagemanager = "winget"
+
+[tasks.winget-installer]
+type = "install"
+flags = ["install"]
+pkgs = [
+    "ImageMagick.ImageMagick"
+]
+is_sudo = false
+
+[tasks.magick]
+type = "shell"
+program = "magick"
+flags = ["--version"]
+
+[tasks.fastfetch]
+# just for fun =))
+type = "shell"
+program = "fastfetch"
+
+[tasks.install-error]
+type = "install"
+flags = ["install"]
+pkgs = [
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssa"
+]
+is_sudo = false
+
+[tasks.error]
+type = "shell"
+program = "idk"
