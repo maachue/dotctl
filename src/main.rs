@@ -1,15 +1,16 @@
 use clap::Parser;
-use color_eyre::{eyre::Result, owo_colors::OwoColorize};
+use anyhow::Result;
+use owo_colors::OwoColorize;
 
 use crate::cli::Commands;
 
 mod cli;
 mod config;
 mod runner;
-// mod settings_config;
+mod settings_config;
+mod settings;
 
 fn main() -> Result<()> {
-    color_eyre::install()?;
     let args = cli::Cli::parse();
     match args.command {
         Commands::Install {
@@ -32,8 +33,18 @@ fn main() -> Result<()> {
 
             runner::manage(&cfg, dry_run, non_validate, cfg.options.non_confirm)?;
         }
-        Commands::Set { settings } => {
-            println!("{}", settings);
+        Commands::Set { settings, debug, config } => {
+            if debug {
+                println!("{}", settings)
+            }
+
+            let cfg = settings_config::Config::parse(config.unwrap())?;
+
+            if debug {
+                println!("{} Config has: {:?}", "[DEBUG]".red().bold(), cfg);
+            }
+
+            settings::manage(&cfg, true, true)?;
         }
     }
     Ok(())

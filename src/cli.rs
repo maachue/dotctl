@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{PathBuf};
 
 use clap::{Parser, Subcommand};
 
@@ -33,5 +33,13 @@ pub enum Commands {
     },
     Set {
         settings: String,
+
+        /// debug
+        #[arg(long)]
+        debug: bool,
+
+        /// config
+        #[arg(long, short)]
+        config: Option<PathBuf>,
     },
 }

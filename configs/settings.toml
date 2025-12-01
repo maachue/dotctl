@@ -1,0 +1,54 @@
+# TEMPLATE DEFINE SETTINGS FOR `dotctl`
+#| (based on my dotfiles!)
+
+## at options, you required define the path
+[options]
+overall_path = "D:/Code/rust/dotctl/configs/settings" # THIS IS REQUIRED
+# - By default, the path is ~/.config/dotctl
+
+## DEFINE SETTINGS
+
+# # at the master
+# - [settings.overal] # at master the path
+# - something = "default_value"
+# - so on ...
+
+# # at the custom (WILL BASED ON THE **MASTER**!)
+# - [settings.custom]
+# - something1 = "default_value"
+# - so on ...
+
+# - It will like this:
+#  master/ (aka overall_path)
+#  ├── custom/
+#  │   ├── something1
+#  │   └── ...
+#  ├── something
+#  └── ...
+
+# - something, custom/something1, ... will be a file
+
+# # Usage:
+
+# - You can use any scripting language to use this
+# - Just read the file, it only contain some text
+
+# - I dont recommended use multi-line in something, custom/something1, ...
+
+# # EXAMPLE
+
+[settings.overall]
+isrofi = "true"
+clipboardmanager = "clipvault"
+theme = "theme"
+
+[settings.launcher]
+launchertype = "vertical"
+
+# - struct:
+#  ~/.config/dotctl/
+#  ├── launcher/
+#  │   └── launchertype # by default, contain the text: `vertical`
+#  ├── isrofi
+#  ├── theme
+#  └── clipboardmanager

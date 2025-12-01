@@ -1,5 +1,6 @@
 use cin::cin::cin;
-use color_eyre::{eyre::{Result, bail}, owo_colors::OwoColorize};
+use anyhow::{Result, bail};
+use owo_colors::OwoColorize;
 use indexmap::IndexMap;
 use std::process::Command;
 use which::which;
