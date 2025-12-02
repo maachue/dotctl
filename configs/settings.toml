@@ -3,7 +3,8 @@
 
 ## at options, you required define the path
 [options]
-overall_path = "D:/Code/rust/dotctl/configs/settings" # THIS IS REQUIRED
+master_path = "D:/Code/rust/dotctl/configs/settings" # THIS IS REQUIRED
+# THIS PATH IS TEMP!
 # - By default, the path is ~/.config/dotctl
 
 ## DEFINE SETTINGS
@@ -37,7 +38,7 @@ overall_path = "D:/Code/rust/dotctl/configs/settings" # THIS IS REQUIRED
 
 # # EXAMPLE
 
-[settings.overall]
+[settings.master]
 isrofi = "true"
 clipboardmanager = "clipvault"
 theme = "theme"
@@ -52,3 +53,4 @@ launchertype = "vertical"
 #  ├── isrofi
 #  ├── theme
 #  └── clipboardmanager
+

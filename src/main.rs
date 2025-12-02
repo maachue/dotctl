@@ -1,14 +1,12 @@
-use clap::Parser;
 use anyhow::Result;
+use clap::Parser;
 use owo_colors::OwoColorize;
 
 use crate::cli::Commands;
 
 mod cli;
-mod config;
 mod runner;
-mod settings_config;
-mod settings;
+mod utils;
 
 fn main() -> Result<()> {
     let args = cli::Cli::parse();
@@ -16,35 +14,42 @@ fn main() -> Result<()> {
         Commands::Install {
             config,
             dry_run,
-            non_validate,
+            no_validate,
             debug,
-            non_confirm,
+            no_confirm,
             ..
         } => {
-            let mut cfg = config::Config::parse(config)?;
+            let mut cfg = runner::config::Config::parse(config)?;
 
-            if non_confirm != cfg.options.non_confirm {
-                cfg.options.non_confirm = non_confirm;
+            if no_confirm != cfg.options.no_confirm {
+                cfg.options.no_confirm = no_confirm;
             }
 
             if debug {
                 println!("{} The config:\n {:?}", "[DEBUG]".red().bold(), cfg);
             }
 
-            runner::manage(&cfg, dry_run, non_validate, cfg.options.non_confirm)?;
+            runner::manage(&cfg, dry_run, no_validate, cfg.options.no_confirm)?;
         }
-        Commands::Set { settings, debug, config } => {
+        Commands::Set {
+            settings,
+            value,
+            debug,
+            config,
+        } => {
             if debug {
-                println!("{}", settings)
+                println!("{:?}", settings)
             }
 
-            let cfg = settings_config::Config::parse(config.unwrap())?;
+            // let cfg = settings_config::Config::parse(config.unwrap())?;
 
-            if debug {
-                println!("{} Config has: {:?}", "[DEBUG]".red().bold(), cfg);
-            }
+            // let Someset: Vec<&str> = settings.split('.').collect();
 
-            settings::manage(&cfg, true, true)?;
+            // if debug {
+            //     println!("{} Config has: {:?}", "[DEBUG]".red().bold(), cfg);
+            // }
+
+            // settings::manage(&cfg, &set, &value.unwrap(), true, true)?;
         }
     }
     Ok(())

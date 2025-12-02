@@ -1,4 +1,4 @@
-use std::path::{PathBuf};
+use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
@@ -10,7 +10,6 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
-    /// installing dependencies based on toml config
     Install {
         /// path to your config
         config: PathBuf,
@@ -21,7 +20,7 @@ pub enum Commands {
 
         /// non validate run (all will validate by default)
         #[arg(long)]
-        non_validate: bool,
+        no_validate: bool,
 
         /// debug (print all the config has)
         #[arg(long, default_value_t = false)]
@@ -29,10 +28,11 @@ pub enum Commands {
 
         /// skip confirm
         #[arg(long)]
-        non_confirm: bool,
+        no_confirm: bool,
     },
     Set {
-        settings: String,
+        settings: Option<String>,
+        value: Option<String>,
 
         /// debug
         #[arg(long)]

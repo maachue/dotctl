@@ -5,9 +5,9 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.100"
-cin = "0.2.0"
 clap = { version = "4.5.53", features = ["derive"] }
-dirs = "6.0.0"
+dialoguer = "0.12.0"
+duct = "1.1.1"
 indexmap = { version = "2.12.1", features = ["serde"] }
 owo-colors = "4.2.3"
 serde = { version = "1.0.228", features = ["derive"] }

@@ -54,7 +54,7 @@ pub enum Tasks {
 #[derive(Deserialize, Default, Debug)]
 #[serde(deny_unknown_fields)]
 pub struct Options {
-    pub non_confirm: bool,
+    pub no_confirm: bool,
     pub packagemanager: String,
 }
 
