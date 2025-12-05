@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Result, bail};
 use clap::Parser;
 use owo_colors::OwoColorize;
 
@@ -49,20 +49,42 @@ fn main() -> Result<()> {
             value,
             debug,
             config,
+            init
         } => {
             if debug {
                 println!("{:?}", settings)
             }
 
-            // let cfg = settings_config::Config::parse(config.unwrap())?;
+            let cfg = crate::settings::config::Config::parse(config.unwrap())?;
 
-            // let Someset: Vec<&str> = settings.split('.').collect();
+            if debug {
+                println!("{} Config has: {:?}", "[DEBUG]".red().bold(), cfg);
+                println!("{:?}", value.green().bold());
+            }
 
-            // if debug {
-            //     println!("{} Config has: {:?}", "[DEBUG]".red().bold(), cfg);
-            // }
+            match (settings, value) {
+                (Some(s), Some(v)) => {
+                    let sets = crate::settings::resolver::resolve_set(&s)?;
+                    println!("{} {:?}", "[DEBUG]".green().bold(), sets);
+                    settings::mange(
+                        &cfg,
+                        sets,
+                        &v,
+                        true,
+                        false,
+                    )?;
+                }
+                (Some(_), None) => {
+                    bail!("{} Missing value. `--help` to see usage", "[ERR]".red().bold())
+                }
+                (None, Some(_)) => {
+                    bail!("{} Missing value. `--help` to see usage", "[ERR]".red().bold())
+                }
+                _ => {
+                    bail!("{} Nothing to do. `--help` to see usage OR set --init", "[ERR]".red().bold())
+                }
+            }
 
-            // settings::manage(&cfg, &set, &value.unwrap(), true, true)?;
         }
     }
     Ok(())

@@ -42,7 +42,11 @@ pub enum Commands {
         debug: bool,
 
         /// config
-        #[arg(long, short)]
+        #[arg(long, short, default_value = "./configs/settings.toml")]
         config: Option<PathBuf>,
+
+        // init
+        #[arg(long, short)]
+        init: bool,
     },
 }
