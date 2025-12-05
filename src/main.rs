@@ -1,13 +1,15 @@
 use anyhow::{Result, bail};
 use clap::Parser;
 use owo_colors::OwoColorize;
+use utils::{DEBUG, ERR, INFO};
 
 use crate::cli::Commands;
 
 mod cli;
 mod runner;
-mod settings;
+// mod settings;
 mod utils;
+mod settings;
 
 fn main() -> Result<()> {
     let args = cli::Cli::parse();
@@ -20,7 +22,7 @@ fn main() -> Result<()> {
             debug,
             no_confirm,
         } => {
-            println!("{:?}", task.red().bold());
+            // println!("{:?}", task.red().bold());
 
             let mut cfg = runner::config::Config::parse(config)?;
 
@@ -29,11 +31,11 @@ fn main() -> Result<()> {
             }
 
             if debug {
-                println!("{} The config:\n {:?}", "[DEBUG]".red().bold(), cfg);
+                println!("{} The config:\n {:?}", DEBUG.red().bold(), cfg);
             }
 
             if let Some(tasks) = &task {
-                println!("[INFO] Run specify task(s):");
+                println!("{} Run specify task(s):", INFO.blue().bold());
 
                 for t in tasks {
                     println!(" - {}", t);
@@ -44,47 +46,31 @@ fn main() -> Result<()> {
 
             runner::manage(&cfg, dry_run, no_validate, cfg.options.no_confirm)?;
         }
-        Commands::Set {
-            settings,
+        Commands::Set { settings,
             value,
             debug,
             config,
-            init
-        } => {
-            if debug {
-                println!("{:?}", settings)
-            }
-
+            init } => {
             let cfg = crate::settings::config::Config::parse(config.unwrap())?;
-
             if debug {
-                println!("{} Config has: {:?}", "[DEBUG]".red().bold(), cfg);
-                println!("{:?}", value.green().bold());
+                println!("{} {:?}", DEBUG.red().bold(), settings);
+                println!("{} settings:\n{:?}", DEBUG.red().bold(), cfg);
             }
 
             match (settings, value) {
                 (Some(s), Some(v)) => {
-                    let sets = crate::settings::resolver::resolve_set(&s)?;
-                    println!("{} {:?}", "[DEBUG]".green().bold(), sets);
-                    settings::mange(
-                        &cfg,
-                        sets,
-                        &v,
-                        true,
-                        false,
-                    )?;
+                    settings::manage(&cfg, &s, &v, true, true)?;
                 }
                 (Some(_), None) => {
-                    bail!("{} Missing value. `--help` to see usage", "[ERR]".red().bold())
+                    bail!("{} Missing value. `--help` to see usage", ERR.red().bold())
                 }
                 (None, Some(_)) => {
-                    bail!("{} Missing value. `--help` to see usage", "[ERR]".red().bold())
+                    bail!("{} Missing setting. `--help` to see usage", ERR.red().bold())
                 }
                 _ => {
-                    bail!("{} Nothing to do. `--help` to see usage OR set --init", "[ERR]".red().bold())
+                    bail!("{} Nothing to do.", ERR.red().bold())
                 }
             }
-
         }
     }
     Ok(())

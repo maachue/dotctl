@@ -1,6 +1,10 @@
 use std::path::PathBuf;
 use anyhow::Result;
 
+pub const ERR: &str = "[ERR]";
+pub const DEBUG: &str = "[DEBUG]";
+pub const INFO: &str = "[INFO]";
+
 pub fn resolve_path(path_str: &str) -> PathBuf {
     PathBuf::from(
         shellexpand::full(path_str)

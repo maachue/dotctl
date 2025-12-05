@@ -1,34 +1,22 @@
-use crate::settings::{BuiltSettings, config::Config};
-use anyhow::{Result, bail};
+use anyhow::Result;
+use owo_colors::OwoColorize;
 
-pub fn resolver(
-    config: &Config,
-    cli: &[&str],
-    value_set: &str
-) -> Option<BuiltSettings> {
-    if cli.len() != 2 {
-        return None
-    }
+use crate::settings::ERR;
 
-    let master = cli[0];
-    let sub = cli[1];
-
-    let path = config.options.master_path.clone().unwrap();
-    Some(BuiltSettings::new(&path /* should be a &str */, master, sub, value_set))
+#[derive(Debug, Clone)]
+pub struct SettingsPath {
+    pub master: String,
+    pub sub: String,
 }
 
-#[derive(Debug)]
-pub struct SettingsPath<'a> {
-    pub master: &'a str,
-    pub sub: &'a str,
-}
+pub fn resolver_key(input: &str) -> Result<SettingsPath> {
+    let mut parts = input.split('.');
 
-pub fn resolve_set(input: &str) -> Result<SettingsPath<'_>> {
-    let parts: Vec<&str> = input.split('.').collect();
+    let master = parts.next().unwrap().to_string();
+    let sub = parts
+        .next()
+        .ok_or_else(|| anyhow::anyhow!("{} Expected format master.sub", ERR.red().bold()))?
+        .to_string();
 
-    if parts.len() != 2 {
-        bail!("Expected master.sub\nYou entered: {}", input)
-    }
-
-    Ok(SettingsPath { master: parts[0], sub: parts[1] })
+    Ok(SettingsPath { master, sub })
 }
