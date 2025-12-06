@@ -20,3 +20,4 @@ pub fn resolver_key(input: &str) -> Result<SettingsPath> {
 
     Ok(SettingsPath { master, sub })
 }
+

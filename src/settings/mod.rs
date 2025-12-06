@@ -1,13 +1,13 @@
-mod resolver;
-mod validate;
 mod build;
+pub mod config;
 mod exec;
 pub mod init;
-pub mod config;
+mod resolver;
+mod validate;
 
-use anyhow::Result;
 use crate::settings::config::Config;
-pub use crate::utils::{ERR, DEBUG, INFO};
+pub use crate::utils::ERR;
+use anyhow::Result;
 
 pub fn manage(
     config: &Config,
@@ -20,11 +20,7 @@ pub fn manage(
     let key = resolver::resolver_key(raw_key)?;
     validate::validate(config, &key)?;
 
-    let item = build::BuiltSettings::new(
-        &config.options.master_path.clone().unwrap(),
-        key,
-        value,
-    );
+    let item = build::BuiltSettings::new(&config.options.master_path.clone().unwrap(), key, value);
 
     if display_flag {
         item.display();

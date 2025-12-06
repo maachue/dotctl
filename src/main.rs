@@ -7,9 +7,8 @@ use crate::cli::Commands;
 
 mod cli;
 mod runner;
-// mod settings;
-mod utils;
 mod settings;
+mod utils;
 
 fn main() -> Result<()> {
     let args = cli::Cli::parse();
@@ -44,11 +43,13 @@ fn main() -> Result<()> {
 
             runner::manage(&cfg, dry_run, no_validate, cfg.options.no_confirm)?;
         }
-        Commands::Set { settings,
+        Commands::Set {
+            settings,
             value,
             debug,
             config,
-            init } => {
+            init,
+        } => {
             let cfg = crate::settings::config::Config::parse(config.unwrap())?;
             if debug {
                 println!("{} {:?}", DEBUG.red().bold(), settings);
@@ -57,7 +58,7 @@ fn main() -> Result<()> {
 
             if init {
                 crate::settings::init::init(&cfg, true, false)?;
-                return Ok(())
+                return Ok(());
             }
 
             match (settings, value) {
@@ -68,7 +69,10 @@ fn main() -> Result<()> {
                     bail!("{} Missing value. `--help` to see usage", ERR.red().bold())
                 }
                 (None, Some(_)) => {
-                    bail!("{} Missing setting. `--help` to see usage", ERR.red().bold())
+                    bail!(
+                        "{} Missing setting. `--help` to see usage",
+                        ERR.red().bold()
+                    )
                 }
                 _ => {
                     bail!("{} Nothing to do.", ERR.red().bold())

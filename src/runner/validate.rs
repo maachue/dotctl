@@ -21,4 +21,3 @@ pub fn is_define(order: &Option<Vec<String>>, tasks: &IndexMap<String, Tasks>) -
 
     Ok(())
 }
-

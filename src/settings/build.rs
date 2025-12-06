@@ -1,6 +1,6 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
-use crate::settings::{resolver::SettingsPath};
+use crate::settings::resolver::SettingsPath;
 
 use crate::utils::resolve_path;
 
@@ -11,8 +11,8 @@ pub struct BuiltSettings {
     pub value: String,
 }
 
-pub fn build_path(base: &PathBuf, master: &str, sub: &str) -> PathBuf {
-    let mut p = base.clone();
+pub fn build_path(base: &Path, master: &str, sub: &str) -> PathBuf {
+    let mut p = base.to_path_buf();
 
     if master == "master" {
         p.push(sub);
@@ -28,6 +28,11 @@ impl BuiltSettings {
     pub fn new(base: &str, key: SettingsPath, value: &str) -> Self {
         let path = resolve_path(base);
         let path = build_path(&path, &key.master, &key.sub);
-        Self { path: path, master: key.master, sub: key.sub, value: value.to_string() }
+        Self {
+            path,
+            master: key.master,
+            sub: key.sub,
+            value: value.to_string(),
+        }
     }
 }
