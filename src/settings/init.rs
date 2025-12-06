@@ -9,6 +9,7 @@ use crate::{
 };
 
 pub fn init(config: &Config, _display: bool, no_confirm: bool) -> Result<()> {
+    // NOTE: display now is useless. Write logic for it later
     let master_path = config
         .options
         .master_path

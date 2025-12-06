@@ -49,7 +49,10 @@ fn main() -> Result<()> {
             debug,
             config,
             init,
+            no_confirm,
+            no_display,
         } => {
+            let display = !no_display; // this is my fault
             let cfg = crate::settings::config::Config::parse(config.unwrap())?;
             if debug {
                 println!("{} {:?}", DEBUG.red().bold(), settings);
@@ -57,13 +60,13 @@ fn main() -> Result<()> {
             }
 
             if init {
-                crate::settings::init::init(&cfg, true, false)?;
+                crate::settings::init::init(&cfg, display, no_confirm)?;
                 return Ok(());
             }
 
             match (settings, value) {
                 (Some(s), Some(v)) => {
-                    settings::manage(&cfg, &s, &v, true, true)?;
+                    settings::manage(&cfg, &s, &v, display, no_confirm)?;
                 }
                 (Some(_), None) => {
                     bail!("{} Missing value. `--help` to see usage", ERR.red().bold())
